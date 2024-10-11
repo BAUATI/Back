@@ -30,10 +30,8 @@ router.post('/', [
   validarCampos
 ], usersPost);
 
-router.put("/:id",[
-  check('id', 'No es un id válido').isMongoId(),
-  check('id').custom(usuarioPorId),
-  check('rol').custom(rolValido),
+router.put("/:nombre",[
+  check('nombre', 'El nombre del usuario es obligatorio').not().isEmpty(),
   validarCampos
 ], usersPut);
 

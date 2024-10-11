@@ -16,16 +16,36 @@ const usersGet = async (req = request, res = response) => {
 };
 
 const usersPut = async (req, res = response) => {
-  const { id } = req.params;
-  const { _id, contraseña, ...resto } = req.body;
+  const { nombre } = req.params;  
+  const { contraseña, ...resto } = req.body;  
+
 
   if (contraseña) {
-    const salt = bcryptjs.genSaltSync();
-    resto.contraseña = bcryptjs.hashSync(contraseña, salt);
+      const salt = bcryptjs.genSaltSync();
+      resto.contraseña = bcryptjs.hashSync(contraseña, salt);
   }
 
-  const usuario = await Usuario.findByIdAndUpdate(id, resto, { new: true });
-  res.json(usuario);
+  try {
+     
+      const usuario = await Usuario.findOneAndUpdate({ nombre }, resto, { new: true });
+
+      if (!usuario) {
+          return res.status(404).json({
+              msg: 'Usuario no encontrado'
+          });
+      }
+
+      res.json({
+          msg: 'Contraseña actualizada con éxito',
+          usuario
+      });
+
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({
+          msg: 'Error al actualizar la contraseña, contacte al administrador'
+      });
+  }
 };
 
 const usersPost = async (req, res = response) => {
